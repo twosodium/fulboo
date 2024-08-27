@@ -1,0 +1,163 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #090812;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#e3cfac", "id": "Almeria", "label": "Almeria", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Vallecano", "label": "Vallecano", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Real Madrid", "label": "Real Madrid", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Cadiz", "label": "Cadiz", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Celta", "label": "Celta", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Villarreal", "label": "Villarreal", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Valencia", "label": "Valencia", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Sevilla", "label": "Sevilla", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Granada", "label": "Granada", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Ath Bilbao", "label": "Ath Bilbao", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Girona", "label": "Girona", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Las Palmas", "label": "Las Palmas", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Alaves", "label": "Alaves", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Sociedad", "label": "Sociedad", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Getafe", "label": "Getafe", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Betis", "label": "Betis", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Ath Madrid", "label": "Ath Madrid", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Mallorca", "label": "Mallorca", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Barcelona", "label": "Barcelona", "shape": "dot", "size": 10}, {"color": "#e3cfac", "id": "Osasuna", "label": "Osasuna", "shape": "dot", "size": 10}]);
+                  edges = new vis.DataSet([{"FTR": "A", "from": "Almeria", "to": "Vallecano", "width": 1}, {"FTR": "H", "from": "Almeria", "to": "Real Madrid", "width": 1}, {"FTR": "D", "from": "Almeria", "to": "Cadiz", "width": 1}, {"FTR": "A", "from": "Almeria", "to": "Celta", "width": 1}, {"FTR": "H", "from": "Almeria", "to": "Villarreal", "width": 1}, {"FTR": "H", "from": "Almeria", "to": "Valencia", "width": 1}, {"FTR": "H", "from": "Almeria", "to": "Sevilla", "width": 1}, {"FTR": "D", "from": "Almeria", "to": "Granada", "width": 1}, {"FTR": "D", "from": "Almeria", "to": "Ath Bilbao", "width": 1}, {"FTR": "D", "from": "Almeria", "to": "Girona", "width": 1}, {"FTR": "A", "from": "Almeria", "to": "Las Palmas", "width": 1}, {"FTR": "A", "from": "Almeria", "to": "Alaves", "width": 1}, {"FTR": "A", "from": "Almeria", "to": "Sociedad", "width": 1}, {"FTR": "H", "from": "Almeria", "to": "Getafe", "width": 1}, {"FTR": "D", "from": "Almeria", "to": "Betis", "width": 1}, {"FTR": "D", "from": "Almeria", "to": "Ath Madrid", "width": 1}, {"FTR": "D", "from": "Almeria", "to": "Mallorca", "width": 1}, {"FTR": "H", "from": "Almeria", "to": "Barcelona", "width": 1}, {"FTR": "H", "from": "Almeria", "to": "Osasuna", "width": 1}, {"FTR": "A", "from": "Vallecano", "to": "Granada", "width": 1}, {"FTR": "H", "from": "Vallecano", "to": "Ath Madrid", "width": 1}, {"FTR": "H", "from": "Vallecano", "to": "Betis", "width": 1}, {"FTR": "H", "from": "Vallecano", "to": "Alaves", "width": 1}, {"FTR": "D", "from": "Vallecano", "to": "Villarreal", "width": 1}, {"FTR": "D", "from": "Vallecano", "to": "Cadiz", "width": 1}, {"FTR": "H", "from": "Vallecano", "to": "Mallorca", "width": 1}, {"FTR": "A", "from": "Vallecano", "to": "Sevilla", "width": 1}, {"FTR": "A", "from": "Vallecano", "to": "Las Palmas", "width": 1}, {"FTR": "D", "from": "Vallecano", "to": "Sociedad", "width": 1}, {"FTR": "D", "from": "Vallecano", "to": "Real Madrid", "width": 1}, {"FTR": "A", "from": "Vallecano", "to": "Girona", "width": 1}, {"FTR": "D", "from": "Vallecano", "to": "Barcelona", "width": 1}, {"FTR": "H", "from": "Vallecano", "to": "Ath Bilbao", "width": 1}, {"FTR": "D", "from": "Vallecano", "to": "Celta", "width": 1}, {"FTR": "H", "from": "Vallecano", "to": "Osasuna", "width": 1}, {"FTR": "A", "from": "Vallecano", "to": "Valencia", "width": 1}, {"FTR": "A", "from": "Vallecano", "to": "Getafe", "width": 1}, {"FTR": "D", "from": "Sevilla", "to": "Valencia", "width": 1}, {"FTR": "A", "from": "Sevilla", "to": "Alaves", "width": 1}, {"FTR": "H", "from": "Sevilla", "to": "Girona", "width": 1}, {"FTR": "H", "from": "Sevilla", "to": "Las Palmas", "width": 1}, {"FTR": "D", "from": "Sevilla", "to": "Osasuna", "width": 1}, {"FTR": "H", "from": "Sevilla", "to": "Barcelona", "width": 1}, {"FTR": "H", "from": "Sevilla", "to": "Real Madrid", "width": 1}, {"FTR": "D", "from": "Sevilla", "to": "Cadiz", "width": 1}, {"FTR": "D", "from": "Sevilla", "to": "Celta", "width": 1}, {"FTR": "D", "from": "Sevilla", "to": "Betis", "width": 1}, {"FTR": "H", "from": "Sevilla", "to": "Sociedad", "width": 1}, {"FTR": "D", "from": "Sevilla", "to": "Villarreal", "width": 1}, {"FTR": "H", "from": "Sevilla", "to": "Mallorca", "width": 1}, {"FTR": "A", "from": "Sevilla", "to": "Getafe", "width": 1}, {"FTR": "A", "from": "Sevilla", "to": "Granada", "width": 1}, {"FTR": "H", "from": "Sevilla", "to": "Ath Madrid", "width": 1}, {"FTR": "A", "from": "Sevilla", "to": "Ath Bilbao", "width": 1}, {"FTR": "H", "from": "Valencia", "to": "Las Palmas", "width": 1}, {"FTR": "A", "from": "Valencia", "to": "Osasuna", "width": 1}, {"FTR": "H", "from": "Valencia", "to": "Alaves", "width": 1}, {"FTR": "H", "from": "Valencia", "to": "Ath Madrid", "width": 1}, {"FTR": "A", "from": "Valencia", "to": "Sociedad", "width": 1}, {"FTR": "H", "from": "Valencia", "to": "Betis", "width": 1}, {"FTR": "D", "from": "Valencia", "to": "Mallorca", "width": 1}, {"FTR": "A", "from": "Valencia", "to": "Cadiz", "width": 1}, {"FTR": "H", "from": "Valencia", "to": "Ath Bilbao", "width": 1}, {"FTR": "H", "from": "Valencia", "to": "Granada", "width": 1}, {"FTR": "H", "from": "Valencia", "to": "Real Madrid", "width": 1}, {"FTR": "D", "from": "Valencia", "to": "Celta", "width": 1}, {"FTR": "H", "from": "Valencia", "to": "Girona", "width": 1}, {"FTR": "H", "from": "Valencia", "to": "Getafe", "width": 1}, {"FTR": "D", "from": "Valencia", "to": "Barcelona", "width": 1}, {"FTR": "H", "from": "Valencia", "to": "Villarreal", "width": 1}, {"FTR": "D", "from": "Sociedad", "to": "Girona", "width": 1}, {"FTR": "A", "from": "Sociedad", "to": "Celta", "width": 1}, {"FTR": "D", "from": "Sociedad", "to": "Las Palmas", "width": 1}, {"FTR": "H", "from": "Sociedad", "to": "Granada", "width": 1}, {"FTR": "H", "from": "Sociedad", "to": "Real Madrid", "width": 1}, {"FTR": "H", "from": "Sociedad", "to": "Getafe", "width": 1}, {"FTR": "H", "from": "Sociedad", "to": "Ath Bilbao", "width": 1}, {"FTR": "H", "from": "Sociedad", "to": "Ath Madrid", "width": 1}, {"FTR": "A", "from": "Sociedad", "to": "Mallorca", "width": 1}, {"FTR": "A", "from": "Sociedad", "to": "Barcelona", "width": 1}, {"FTR": "A", "from": "Sociedad", "to": "Osasuna", "width": 1}, {"FTR": "A", "from": "Sociedad", "to": "Villarreal", "width": 1}, {"FTR": "D", "from": "Sociedad", "to": "Betis", "width": 1}, {"FTR": "D", "from": "Sociedad", "to": "Cadiz", "width": 1}, {"FTR": "D", "from": "Sociedad", "to": "Alaves", "width": 1}, {"FTR": "H", "from": "Girona", "to": "Getafe", "width": 1}, {"FTR": "H", "from": "Girona", "to": "Las Palmas", "width": 1}, {"FTR": "A", "from": "Girona", "to": "Granada", "width": 1}, {"FTR": "H", "from": "Girona", "to": "Mallorca", "width": 1}, {"FTR": "A", "from": "Girona", "to": "Villarreal", "width": 1}, {"FTR": "H", "from": "Girona", "to": "Real Madrid", "width": 1}, {"FTR": "A", "from": "Girona", "to": "Cadiz", "width": 1}, {"FTR": "A", "from": "Girona", "to": "Celta", "width": 1}, {"FTR": "A", "from": "Girona", "to": "Osasuna", "width": 1}, {"FTR": "H", "from": "Girona", "to": "Ath Bilbao", "width": 1}, {"FTR": "A", "from": "Girona", "to": "Barcelona", "width": 1}, {"FTR": "H", "from": "Girona", "to": "Alaves", "width": 1}, {"FTR": "D", "from": "Girona", "to": "Betis", "width": 1}, {"FTR": "H", "from": "Girona", "to": "Ath Madrid", "width": 1}, {"FTR": "D", "from": "Las Palmas", "to": "Mallorca", "width": 1}, {"FTR": "D", "from": "Las Palmas", "to": "Granada", "width": 1}, {"FTR": "A", "from": "Las Palmas", "to": "Real Madrid", "width": 1}, {"FTR": "H", "from": "Las Palmas", "to": "Celta", "width": 1}, {"FTR": "H", "from": "Las Palmas", "to": "Villarreal", "width": 1}, {"FTR": "H", "from": "Las Palmas", "to": "Ath Madrid", "width": 1}, {"FTR": "D", "from": "Las Palmas", "to": "Osasuna", "width": 1}, {"FTR": "H", "from": "Las Palmas", "to": "Betis", "width": 1}, {"FTR": "H", "from": "Las Palmas", "to": "Getafe", "width": 1}, {"FTR": "A", "from": "Las Palmas", "to": "Alaves", "width": 1}, {"FTR": "D", "from": "Las Palmas", "to": "Cadiz", "width": 1}, {"FTR": "H", "from": "Las Palmas", "to": "Ath Bilbao", "width": 1}, {"FTR": "A", "from": "Las Palmas", "to": "Barcelona", "width": 1}, {"FTR": "D", "from": "Mallorca", "to": "Villarreal", "width": 1}, {"FTR": "H", "from": "Mallorca", "to": "Granada", "width": 1}, {"FTR": "H", "from": "Mallorca", "to": "Ath Bilbao", "width": 1}, {"FTR": "D", "from": "Mallorca", "to": "Celta", "width": 1}, {"FTR": "D", "from": "Mallorca", "to": "Barcelona", "width": 1}, {"FTR": "D", "from": "Mallorca", "to": "Getafe", "width": 1}, {"FTR": "A", "from": "Mallorca", "to": "Betis", "width": 1}, {"FTR": "H", "from": "Mallorca", "to": "Ath Madrid", "width": 1}, {"FTR": "D", "from": "Mallorca", "to": "Cadiz", "width": 1}, {"FTR": "D", "from": "Mallorca", "to": "Alaves", "width": 1}, {"FTR": "H", "from": "Mallorca", "to": "Osasuna", "width": 1}, {"FTR": "H", "from": "Mallorca", "to": "Real Madrid", "width": 1}, {"FTR": "A", "from": "Ath Bilbao", "to": "Real Madrid", "width": 1}, {"FTR": "A", "from": "Ath Bilbao", "to": "Osasuna", "width": 1}, {"FTR": "H", "from": "Ath Bilbao", "to": "Betis", "width": 1}, {"FTR": "D", "from": "Ath Bilbao", "to": "Cadiz", "width": 1}, {"FTR": "A", "from": "Ath Bilbao", "to": "Alaves", "width": 1}, {"FTR": "D", "from": "Ath Bilbao", "to": "Getafe", "width": 1}, {"FTR": "H", "from": "Ath Bilbao", "to": "Barcelona", "width": 1}, {"FTR": "A", "from": "Ath Bilbao", "to": "Villarreal", "width": 1}, {"FTR": "H", "from": "Ath Bilbao", "to": "Celta", "width": 1}, {"FTR": "D", "from": "Ath Bilbao", "to": "Granada", "width": 1}, {"FTR": "H", "from": "Ath Bilbao", "to": "Ath Madrid", "width": 1}, {"FTR": "A", "from": "Real Madrid", "to": "Celta", "width": 1}, {"FTR": "A", "from": "Real Madrid", "to": "Getafe", "width": 1}, {"FTR": "D", "from": "Real Madrid", "to": "Ath Madrid", "width": 1}, {"FTR": "H", "from": "Real Madrid", "to": "Osasuna", "width": 1}, {"FTR": "A", "from": "Real Madrid", "to": "Barcelona", "width": 1}, {"FTR": "A", "from": "Real Madrid", "to": "Cadiz", "width": 1}, {"FTR": "H", "from": "Real Madrid", "to": "Granada", "width": 1}, {"FTR": "D", "from": "Real Madrid", "to": "Betis", "width": 1}, {"FTR": "H", "from": "Real Madrid", "to": "Villarreal", "width": 1}, {"FTR": "A", "from": "Real Madrid", "to": "Alaves", "width": 1}, {"FTR": "A", "from": "Celta", "to": "Osasuna", "width": 1}, {"FTR": "A", "from": "Celta", "to": "Barcelona", "width": 1}, {"FTR": "D", "from": "Celta", "to": "Alaves", "width": 1}, {"FTR": "H", "from": "Celta", "to": "Getafe", "width": 1}, {"FTR": "A", "from": "Celta", "to": "Ath Madrid", "width": 1}, {"FTR": "D", "from": "Celta", "to": "Cadiz", "width": 1}, {"FTR": "H", "from": "Celta", "to": "Granada", "width": 1}, {"FTR": "H", "from": "Celta", "to": "Villarreal", "width": 1}, {"FTR": "H", "from": "Celta", "to": "Betis", "width": 1}, {"FTR": "H", "from": "Osasuna", "to": "Barcelona", "width": 1}, {"FTR": "H", "from": "Osasuna", "to": "Getafe", "width": 1}, {"FTR": "A", "from": "Osasuna", "to": "Ath Madrid", "width": 1}, {"FTR": "A", "from": "Osasuna", "to": "Alaves", "width": 1}, {"FTR": "H", "from": "Osasuna", "to": "Granada", "width": 1}, {"FTR": "H", "from": "Osasuna", "to": "Betis", "width": 1}, {"FTR": "H", "from": "Osasuna", "to": "Villarreal", "width": 1}, {"FTR": "H", "from": "Osasuna", "to": "Cadiz", "width": 1}, {"FTR": "A", "from": "Villarreal", "to": "Betis", "width": 1}, {"FTR": "A", "from": "Villarreal", "to": "Barcelona", "width": 1}, {"FTR": "D", "from": "Villarreal", "to": "Cadiz", "width": 1}, {"FTR": "D", "from": "Villarreal", "to": "Getafe", "width": 1}, {"FTR": "D", "from": "Villarreal", "to": "Alaves", "width": 1}, {"FTR": "A", "from": "Villarreal", "to": "Granada", "width": 1}, {"FTR": "H", "from": "Villarreal", "to": "Ath Madrid", "width": 1}, {"FTR": "D", "from": "Betis", "to": "Ath Madrid", "width": 1}, {"FTR": "A", "from": "Betis", "to": "Barcelona", "width": 1}, {"FTR": "A", "from": "Betis", "to": "Cadiz", "width": 1}, {"FTR": "H", "from": "Betis", "to": "Granada", "width": 1}, {"FTR": "D", "from": "Betis", "to": "Alaves", "width": 1}, {"FTR": "D", "from": "Betis", "to": "Getafe", "width": 1}, {"FTR": "H", "from": "Getafe", "to": "Barcelona", "width": 1}, {"FTR": "H", "from": "Getafe", "to": "Alaves", "width": 1}, {"FTR": "H", "from": "Getafe", "to": "Cadiz", "width": 1}, {"FTR": "H", "from": "Getafe", "to": "Granada", "width": 1}, {"FTR": "D", "from": "Getafe", "to": "Ath Madrid", "width": 1}, {"FTR": "H", "from": "Barcelona", "to": "Cadiz", "width": 1}, {"FTR": "D", "from": "Barcelona", "to": "Granada", "width": 1}, {"FTR": "A", "from": "Barcelona", "to": "Alaves", "width": 1}, {"FTR": "H", "from": "Barcelona", "to": "Ath Madrid", "width": 1}, {"FTR": "H", "from": "Cadiz", "to": "Alaves", "width": 1}, {"FTR": "H", "from": "Cadiz", "to": "Ath Madrid", "width": 1}, {"FTR": "H", "from": "Cadiz", "to": "Granada", "width": 1}, {"FTR": "H", "from": "Alaves", "to": "Ath Madrid", "width": 1}, {"FTR": "H", "from": "Alaves", "to": "Granada", "width": 1}, {"FTR": "A", "from": "Ath Madrid", "to": "Granada", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "repulsion": {
+            "centralGravity": 0,
+            "damping": 0.3,
+            "nodeDistance": 500,
+            "springConstant": 0.1,
+            "springLength": 10
+        },
+        "solver": "repulsion",
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
