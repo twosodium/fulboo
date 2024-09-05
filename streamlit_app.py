@@ -15,11 +15,11 @@ countries = ['Spain', 'England', 'Germany']
 country = st.selectbox("Select a league:", countries)
 
 if country == 'England':
-    fulbodata = pd.read_csv('SP1.csv')
+    fulbodata = pd.read_csv('E0.csv')
 if country == 'Spain':
     fulbodata = pd.read_csv('SP1.csv')
 if country == 'Germany':
-    fulbodata = pd.read_csv('SP1.csv')
+    fulbodata = pd.read_csv('D1.csv')
 
 # pandas -> networkx
 G = networkx.DiGraph()
