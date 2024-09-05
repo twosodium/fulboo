@@ -6,7 +6,8 @@ import networkx
 import streamlit.components.v1 as components
 
 
-st.title("F      U      L      B      O            A      I")
+st.title("F      U      L      B      O      ")
+st.write("beta")
 
 fulbodata = ''
 
