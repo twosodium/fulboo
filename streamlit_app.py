@@ -39,7 +39,7 @@ for _, row in fulbodata.iterrows():
 # node customization
 for node in G.nodes():
     G.nodes[node]['label'] = str(node)
-    G.nodes[node]['color'] = '#e3cfac'
+    G.nodes[node]['color'] = '#807159'
     G.nodes[node]['labelHighlightBold'] = False
 
 # networkx -> pyvis
