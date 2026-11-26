@@ -1,92 +1,107 @@
-// Fetch fixtures from API-Sports and write normalized data files
-import { writeFile, mkdir } from "node:fs/promises";
+// Fetch current-season fixtures from SportAPI and write normalized data files
+import { writeFile, mkdir, access } from "node:fs/promises";
 
-const KEY = process.env.API_FOOTBALL_KEY;
-if (!KEY) { console.error("Missing API_FOOTBALL_KEY"); process.exit(1); }
+const KEY = process.env.SPORTAPI_KEY;
+if (!KEY) { console.error("Missing SPORTAPI_KEY"); process.exit(1); }
 
-const HOST = "https://v3.football.api-sports.io";
-const FINISHED = new Set(["FT", "AET", "PEN"]);
-
-// competition code name and API-Sports league id
-const COMPS = [
-  { code: "cl",        name: "Champions League",       id: 2 },
-  { code: "el",        name: "Europa League",          id: 3 },
-  { code: "conf",      name: "Conference League",      id: 848 },
-  { code: "cwc",       name: "Club World Cup",         id: 15 },
-  { code: "pl",        name: "Premier League",         id: 39 },
-  { code: "laliga",    name: "La Liga",                id: 140 },
-  { code: "seriea",    name: "Serie A",                id: 135 },
-  { code: "bundesliga",name: "Bundesliga",             id: 78 },
-  { code: "ligue1",    name: "Ligue 1",                id: 61 },
-  { code: "copadelrey",name: "Copa del Rey",           id: 143 },
-  { code: "dfb",       name: "DFB-Pokal",              id: 81 },
-  { code: "coppa",     name: "Coppa Italia",           id: 137 },
-  { code: "coupe",     name: "Coupe de France",        id: 66 },
-  { code: "facup",     name: "FA Cup",                 id: 45 },
-  { code: "efl",       name: "EFL Cup",                id: 48 },
-];
-
+const HOST = "https://sportapi.ai/api";
+const ESPN = id => `https://a.espncdn.com/i/teamlogos/soccer/500/${id}.png`;
+const FINISHED = new Set(["FT", "AET", "PENS"]);
 const STOP = new Set(["FC","CF","AC","SC","AS","SS","SSC","RC","UD","CD","CA","AFC","CP","US","SV","1","II"]);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-// Pull one API endpoint as json
-async function api(path) {
-  const res = await fetch(`${HOST}/${path}`, { headers: { "x-apisports-key": KEY } });
-  const json = await res.json();
-  if (json.errors && Object.keys(json.errors).length) throw new Error(JSON.stringify(json.errors));
-  return json.response || [];
-}
+// competition league id to code and name, in display order
+const COMPS = [
+  [18, "cl", "Champions League"], [22, "el", "Europa League"], [23, "conf", "Conference League"],
+  [24, "pl", "Premier League"], [1, "laliga", "La Liga"], [3, "seriea", "Serie A"],
+  [2, "bundesliga", "Bundesliga"], [9, "ligue1", "Ligue 1"],
+  [32, "copadelrey", "Copa del Rey"], [31, "dfb", "DFB-Pokal"], [30, "coppa", "Coppa Italia"],
+  [28, "coupe", "Coupe de France"], [58, "facup", "FA Cup"], [25, "efl", "EFL Cup"],
+];
+const BYID = new Map(COMPS.map(([id, code, name]) => [id, { code, name }]));
+const CUPS = new Set(["copadelrey", "dfb", "coppa", "coupe", "facup", "efl"]);
 
-// Three letter code derived from a club name
+// current season slug like 2026-27
+const now = new Date();
+const startY = now.getUTCMonth() + 1 >= 7 ? now.getUTCFullYear() : now.getUTCFullYear() - 1;
+const SLUG = `${startY}-${String((startY + 1) % 100).padStart(2, "0")}`;
+const SEASON = { id: SLUG, label: SLUG, start: `${startY}-07-01`, end: `${startY + 1}-06-30` };
+
+// date sweep window from season start to a near-future horizon
+const FROM = process.env.FROM || SEASON.start;
+const TO = new Date(now.getTime() + 45 * 86400000).toISOString().slice(0, 10);
+
+// three letter code from a club name
 function shortName(name) {
   const clean = name.normalize("NFD").replace(/[̀-ͯ]/g, "");
   const words = clean.split(/\s+/).filter(w => w && !STOP.has(w.toUpperCase()));
   return (words.join("") || clean).slice(0, 3).toUpperCase();
 }
-
-// Deterministic dot color from a club id
-function color(id) {
-  let h = 0; for (const ch of String(id)) h = (h * 31 + ch.charCodeAt(0)) % 360;
+// deterministic dot color from a club name
+function color(name) {
+  let h = 0; for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) % 360;
   return `hsl(${h} 62% 55%)`;
 }
+const espnId = file => (String(file || "").match(/(\d+)/) || [])[1] || null;
 
-// Current season year and start end dates for a league
-async function season(id) {
-  const rows = await api(`leagues?id=${id}&current=true`);
-  const s = rows[0]?.seasons?.find(x => x.current) || rows[0]?.seasons?.at(-1);
-  const y = s ? s.year : new Date().getUTCFullYear();
-  const end = `${y + 1}-06-30`;
-  return { year: y, meta: { id: String(y), label: `${y}-${String((y + 1) % 100).padStart(2, "0")}`, start: `${y}-07-01`, end } };
+async function api(path) {
+  const res = await fetch(`${HOST}/${path}`, { headers: { "X-Api-Key": KEY } });
+  if (!res.ok) throw new Error(`http ${res.status}`);
+  return res.json();
 }
 
-// Build one normalized competition file
-async function build(comp) {
-  const { year, meta } = await season(comp.id);
-  await sleep(6500);
-  const rows = await api(`fixtures?league=${comp.id}&season=${year}`);
-  const teams = {}, matches = [];
-  for (const r of rows) {
-    const h = r.teams.home, a = r.teams.away, done = FINISHED.has(r.fixture.status.short);
-    for (const t of [h, a]) if (!teams[t.id]) teams[t.id] = { name: t.name, short: shortName(t.name), color: color(t.id), crest: t.logo };
-    const iso = new Date(r.fixture.date).toISOString();
-    matches.push({ date: iso.slice(0, 10), time: iso.slice(11, 16), home: String(h.id), away: String(a.id),
-      hg: done ? r.goals.home : null, ag: done ? r.goals.away : null });
+// list of dates from a to b inclusive
+function dates(a, b) {
+  const out = []; let d = new Date(a + "T00:00:00Z"), end = new Date(b + "T00:00:00Z");
+  while (d <= end) { out.push(d.toISOString().slice(0, 10)); d = new Date(d.getTime() + 86400000); }
+  return out;
+}
+
+const comps = {};             // code to {teams, matches}
+const logos = new Map();      // espnId to filename
+for (const [, { code, name }] of [...BYID]) comps[code] = { name, teams: {}, matches: [] };
+
+let calls = 0;
+for (const day of dates(FROM, TO)) {
+  let json;
+  try { json = await api(`fixtures/date/${day}`); } catch (e) { console.error(`day ${day} ${e.message}`); continue; }
+  calls++;
+  for (const f of json.data || []) {
+    const meta = BYID.get(f.league_id); if (!meta) continue;
+    const c = comps[meta.code];
+    for (const side of ["home", "away"]) {
+      const id = String(f[`${side}_id`]), eid = espnId(f[`${side}_logo`]);
+      if (!c.teams[id]) c.teams[id] = { name: f[`${side}_team`], short: shortName(f[`${side}_team`]), color: color(f[`${side}_team`]), crest: eid ? `data/logos/${eid}.png` : null };
+      else if (eid && !c.teams[id].crest) c.teams[id].crest = `data/logos/${eid}.png`;
+      if (eid) logos.set(eid, true);
+    }
+    const done = FINISHED.has(f.status), iso = f.kickoff_utc || "";
+    c.matches.push({ date: iso.slice(0, 10) || f.date, time: iso.slice(11, 16), home: String(f.home_id), away: String(f.away_id),
+      hg: done ? f.home_score : null, ag: done ? f.away_score : null, stage: f.stage || null });
   }
-  return { code: comp.code, name: comp.name, seasons: [meta], teams, matches };
+  await sleep(150);
 }
 
-await mkdir("data", { recursive: true });
+// download club crests into data/logos (skip if already present)
+await mkdir("data/logos", { recursive: true });
+const ids = [...logos.keys()];
+for (let i = 0; i < ids.length; i += 8) {
+  await Promise.all(ids.slice(i, i + 8).map(async id => {
+    const path = `data/logos/${id}.png`;
+    try { await access(path); return; } catch {}
+    try { const r = await fetch(ESPN(id)); if (r.ok) await writeFile(path, Buffer.from(await r.arrayBuffer())); } catch {}
+  }));
+}
+
+// write one file per competition with matches plus manifest
 const out = [];
-for (const comp of COMPS) {
-  try {
-    const data = await build(comp);
-    await writeFile(`data/${comp.code}.json`, JSON.stringify(data));
-    out.push({ code: comp.code, name: comp.name });
-    console.log(`${comp.code} ${Object.keys(data.teams).length} teams ${data.matches.length} matches`);
-  } catch (e) {
-    console.error(`skip ${comp.code} ${e.message}`);
-  }
-  await sleep(6500);
+for (const [, code, name] of COMPS) {
+  const c = comps[code];
+  if (!c.matches.length) { console.log(`skip ${code} (no fixtures)`); continue; }
+  const type = CUPS.has(code) ? "cup" : "league";
+  await writeFile(`data/${code}.json`, JSON.stringify({ code, name, type, seasons: [SEASON], teams: c.teams, matches: c.matches }));
+  out.push({ code, name, type });
+  console.log(`${code} ${Object.keys(c.teams).length} teams ${c.matches.length} matches`);
 }
 await writeFile("data/manifest.json", JSON.stringify({ updated: new Date().toISOString(), competitions: out }));
-console.log(`wrote ${out.length} competitions`);
+console.log(`season ${SLUG}, ${calls} day-calls, ${ids.length} logos, ${out.length} competitions`);

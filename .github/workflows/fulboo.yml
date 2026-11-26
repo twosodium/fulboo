@@ -30,7 +30,7 @@ jobs:
       - name: Fetch data
         run: node scripts/fetch-fulboo.mjs
         env:
-          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          SPORTAPI_KEY: ${{ secrets.API_FOOTBALL_KEY }}
 
       - name: Commit data
         run: |

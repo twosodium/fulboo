@@ -6,18 +6,18 @@
 <title>fulboo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.9/standalone/umd/vis-network.min.js"></script>
 <style>
   :root{
     --bg:#060208; --panel:#0a0510; --panel-2:#07030c; --line:rgba(255,255,255,.55); --line-soft:rgba(255,255,255,.16);
     --ink:#ffffff; --muted:#938fc4; --faint:#716a94;
-    --accent:#ef4056; --accent-ink:#fff;
+    --accent:#b4273a; --accent-ink:#fff;
     --fresh:#3fd58a; --stale:#e3c23f; --loss:#e0556b;
   }
   *{box-sizing:border-box;border-radius:0}
   html,body{margin:0;height:100%}
-  body{color:var(--ink);font-family:"EB Garamond",Georgia,serif;overflow:hidden;background:#050206}
+  body{color:var(--ink);font-family:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;overflow:hidden;background:#050206}
   a{color:var(--accent);text-decoration:none}
 
   #bg{position:fixed;inset:0;z-index:-4;pointer-events:none;display:block}
@@ -57,26 +57,26 @@
   .legend-ends span:last-child{text-align:right}
 
   .toggle{display:flex;gap:5px}
-  .toggle button{flex:1;min-width:0;font-family:"EB Garamond",serif;font-style:italic;font-size:12.5px;color:var(--muted);background:var(--panel-2);border:1px solid var(--line);border-radius:0;padding:7px 6px;cursor:pointer;transition:.12s}
+  .toggle button{flex:1;min-width:0;font-family:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;font-size:12.5px;color:var(--muted);background:var(--panel-2);border:1px solid var(--line);border-radius:0;padding:7px 6px;cursor:pointer;transition:.12s}
   .toggle button:hover{color:var(--ink)} .toggle button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
   .field label{display:block;font-size:11px;font-variant-caps:all-small-caps;letter-spacing:.04em;color:var(--faint);margin-bottom:4px}
-  select,input[type=date]{width:100%;min-width:0;background:var(--panel-2);border:1px solid var(--line);border-radius:0;color:var(--ink);padding:7px 9px;font-family:"EB Garamond",serif;font-size:14px;outline:none;color-scheme:dark}
+  select,input[type=date]{width:100%;min-width:0;background:var(--panel-2);border:1px solid var(--line);border-radius:0;color:var(--ink);padding:7px 9px;font-family:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;font-size:13px;outline:none;color-scheme:dark}
   select:focus,input[type=date]:focus{border-color:var(--accent)}
   .dates{display:flex;gap:8px} .dates .field{flex:1;min-width:0}
 
-  .tbl{width:100%;border-collapse:collapse;font-size:13px;font-family:"EB Garamond",Georgia,serif}
+  .tbl{width:100%;border-collapse:collapse;font-size:12.5px;font-family:"Space Grotesk",ui-sans-serif,system-ui,sans-serif}
   .tbl th{font-family:"Unbounded",sans-serif;font-weight:600;font-size:10px;font-variant-caps:all-small-caps;letter-spacing:.03em;color:var(--faint);text-align:right;padding:5px 6px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel);z-index:1}
   .tbl th:first-child,.tbl th:nth-child(2){text-align:left}
   .tbl td{padding:5px 6px;border-bottom:1px solid var(--line-soft);color:var(--muted);text-align:right}
   .tbl td.club{text-align:left;color:var(--ink);display:flex;align-items:center;gap:7px;line-height:1.2}
   .tbl td.rank{text-align:left;color:var(--faint)}
-  .tbl tr:hover td{background:rgba(239,64,86,.08)}
+  .tbl tr:hover td{background:rgba(180,39,58,.12)}
   .dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
 
   .sbox{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:0;color:var(--ink);padding:7px 9px;font-family:inherit;font-size:14px;outline:none;margin-bottom:9px}
   .sbox:focus{border-color:var(--accent)}
   .chips{display:flex;flex-wrap:wrap;gap:5px}
-  .chip{font-family:"EB Garamond",serif;font-size:12.5px;padding:4px 8px;border-radius:0;border:1px solid var(--line);background:var(--panel-2);color:var(--muted);cursor:pointer;transition:.12s}
+  .chip{font-family:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;font-size:12px;padding:4px 8px;border-radius:0;border:1px solid var(--line);background:var(--panel-2);color:var(--muted);cursor:pointer;transition:.12s}
   .chip:hover{color:var(--ink)} .chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
   #customSec{display:none}
 
@@ -141,6 +141,11 @@
       <div class="dates"><div class="field"><label>from</label><input type="date" id="start"></div><div class="field"><label>to</label><input type="date" id="end"></div></div>
     </div>
   </div>
+  <div class="sec" id="roundSec" style="display:none">
+    <h4>rounds</h4>
+    <select id="round"></select>
+    <div class="toggle" id="cupClubs" style="margin-top:10px"><button id="cupNotableBtn" class="on">Clubs with data</button><button id="cupAllBtn">All clubs</button></div>
+  </div>
   <div class="sec" id="customSec">
     <h4>your clubs <span id="customCount"></span></h4>
     <input class="sbox" id="sbox" placeholder="Filter clubs…" />
@@ -166,14 +171,21 @@ const lastYearISO=new Date(NOW-365*DAY).toISOString().slice(0,10);
 let DATA={}, ORDER=[];
 
 // Engine state and helpers
-const BALANCE=0.34, SPAWN_ZOOM=0.95, PARALLAX_PAN=0.4, PARALLAX_ZOOM=0.5;
-let current="", customSel=new Set(), scopeMode="this", seasonValue="", startDate=lastYearISO, endDate=todayISO;
-let network, nodesDS, edgesDS, lastKey="", _ctx, starBase=null, needRebase=true, pinned=null;
+const BALANCE=0.34, SPAWN_ZOOM=1.1, PARALLAX_PAN=0.4, PARALLAX_ZOOM=0.5;
+const STAGED=new Set(["cl","el","conf"]);
+const hasRounds=()=>current!=="custom"&&DATA[current]&&(DATA[current].type==="cup"||STAGED.has(current));
+let current="", customSel=new Set(), scopeMode="this", seasonValue="", startDate=lastYearISO, endDate=todayISO, roundStage="all", cupNotable=true;
+let network, nodesDS, edgesDS, lastKey="", _ctx, starBase=null, needRebase=true, pinned=null, notableSet=new Set();
 const net=document.getElementById("net"), starsEl=document.getElementById("stars"), rightBody=document.getElementById("rightBody");
 const STALE=[0xe3,0xc2,0x3f], FRESH=[0x3f,0xd5,0x8a];
 const allTeamsObj=()=>{const o={};for(const c of Object.values(DATA))Object.assign(o,c.teams);return o;};
 const pick=(obj,set)=>{const o={};set.forEach(id=>{if(obj[id])o[id]=obj[id];});return o;};
 const seasonsOf=()=>current==="custom"?[]:((DATA[current]&&DATA[current].seasons)||[]);
+const isCup=()=>current!=="custom"&&DATA[current]&&DATA[current].type==="cup";
+// Stages ordered by first match date
+function orderedStages(ms){const first={};for(const m of ms){const s=m.stage||"?";const t=Date.parse(m.date);if(!(s in first)||t<first[s])first[s]=t;}return Object.keys(first).sort((a,b)=>first[a]-first[b]);}
+// Most recent stage that has already started
+function defaultStage(ms){const st=orderedStages(ms);let def=st[0]||"all";for(const s of st)if(ms.some(m=>(m.stage||"?")===s&&m.date<=todayISO))def=s;return def;}
 const yt=(a,b,date)=>`https://www.youtube.com/results?search_query=${encodeURIComponent(`${a} vs ${b} ${new Date(date).getFullYear()} highlights`)}`;
 const mix=(a,b,t)=>a.map((x,i)=>Math.round(x+(b[i]-x)*t));
 
@@ -252,6 +264,11 @@ function render(){
   let matches;
   if(across){matches=[];for(const c of Object.values(DATA))matches=matches.concat(c.matches);matches=matches.filter(m=>ids.has(m.home)&&ids.has(m.away));}
   else matches=DATA[current].matches;
+  if(hasRounds()&&!across&&roundStage!=="all"){
+    const order=orderedStages(DATA[current].matches), i=order.indexOf(roundStage);
+    if(i>=0){const allow=new Set(order.slice(i));matches=matches.filter(m=>allow.has(m.stage||"?"));}
+  }
+  if(isCup()&&!across&&cupNotable)matches=matches.filter(m=>notableSet.has(m.home)||notableSet.has(m.away));
   const w=computeWindow(across), span=Math.max(1,(w.e-w.s)/DAY);
   const win={s:w.s,e:w.e,hl:Math.min(400,Math.max(20,span*0.4))};
   const M=buildModel(teams,matches,isCustom?customSel:null,win);
@@ -260,10 +277,11 @@ function render(){
   const shown=new Set(); M.edges.forEach(x=>{shown.add(x.from);shown.add(x.to);});
   const nodes=[];
   Object.keys(teams).forEach(id=>{
-    if(isCustom&&!shown.has(id)&&!customSel.has(id))return;
+    if(isCustom){if(!shown.has(id)&&!customSel.has(id))return;}
+    else{const r=M.rec[id];if(!r||r.w+r.d+r.l===0)return;}
     const dom=(M.outW[id]||0)-(M.inW[id]||0), fallback=teamImg(teams[id].short,teams[id].color), crest=teams[id].crest;
     nodes.push({id,shape:crest?"circularImage":"image",image:crest||fallback,brokenImage:fallback,size:20+Math.max(0,dom)*5.5,label:teams[id].name,
-      font:{color:"#ffffff",face:"EB Garamond",size:15,strokeWidth:5,strokeColor:"#040309",vadjust:-3}});
+      font:{color:"#ffffff",face:"Space Grotesk",size:14,strokeWidth:5,strokeColor:"#040309",vadjust:-3}});
   });
   const visEdges=M.edges.map(x=>{
     const cT=x.margin/M.maxMargin, wT=x.total/M.maxVol, c=mix(STALE,FRESH,cT);
@@ -274,7 +292,7 @@ function render(){
       smooth:{type:"curvedCW",roundness:x.contested?0:0.12}};
   });
   const key=nodes.map(n=>n.id).sort().join(",");
-  const opts={physics:{barnesHut:{gravitationalConstant:-6500,centralGravity:0.35,springLength:155,springConstant:.028,damping:.42,avoidOverlap:.3},stabilization:{iterations:200}},interaction:{hover:true,tooltipDelay:1e9,hideEdgesOnDrag:false},nodes:{borderWidth:0,chosen:{label:false,node:(v,id,sel,hov)=>{if(hov)v.size*=1.45;}}}};
+  const opts={physics:{barnesHut:{gravitationalConstant:-12000,centralGravity:0.18,springLength:230,springConstant:.02,damping:.5,avoidOverlap:.6},stabilization:{iterations:220}},interaction:{hover:true,tooltipDelay:1e9,hideEdgesOnDrag:false},nodes:{borderWidth:0,chosen:{label:false,node:(v,id,sel,hov)=>{if(hov)v.size*=1.45;}}}};
   if(!network){
     nodesDS=new vis.DataSet(nodes); edgesDS=new vis.DataSet(visEdges);
     network=new vis.Network(net,{nodes:nodesDS,edges:edgesDS},opts);
@@ -374,7 +392,8 @@ function buildTabs(){
     const b=document.createElement("button"); b.className="tab"+(code===current?" active":""); b.textContent=label;
     b.onclick=()=>{current=code;[...tabsEl.children].forEach(c=>c.classList.remove("active"));b.classList.add("active");
       document.getElementById("customSec").style.display=code==="custom"?"block":"none";
-      if(code!=="custom"){seasonValue=(seasonsOf()[0]||{}).id||"";fillSeasons();}
+      if(code!=="custom"){seasonValue=(seasonsOf()[0]||{}).id||"";fillSeasons();cupNotable=true;
+        roundStage=hasRounds()?defaultStage(DATA[code].matches):"all";}
       if(code==="custom"&&customSel.size===0){Object.keys(allTeamsObj()).slice(0,6).forEach(x=>customSel.add(x));buildChips();}
       updateControls(); render();};
     tabsEl.appendChild(b);
@@ -398,14 +417,27 @@ updateArrows();
 // Scope toggle season dropdown and calendar
 const seasonSel=document.getElementById("season"), startI=document.getElementById("start"), endI=document.getElementById("end");
 const scopeThis=document.getElementById("scopeThis"), scopeAll=document.getElementById("scopeAll"), scopeSec=document.getElementById("scopeSec"), seasonField=document.getElementById("seasonField"), dateField=document.getElementById("dateField");
+const roundSec=document.getElementById("roundSec"), roundSel=document.getElementById("round");
+const cupNotableBtn=document.getElementById("cupNotableBtn"), cupAllBtn=document.getElementById("cupAllBtn"), cupClubs=document.getElementById("cupClubs");
 function fillSeasons(){const ss=seasonsOf();seasonSel.innerHTML=ss.map(s=>`<option value="${s.id}">${s.label}</option>`).join("")+(ss.length>1?`<option value="last2">last 2 seasons</option>`:"")+(ss.length>2?`<option value="last3">last 3 seasons</option>`:"");seasonSel.value=seasonValue;}
+function fillRounds(){
+  roundSel.innerHTML=orderedStages(DATA[current].matches).map(s=>`<option value="${s}">${s}</option>`).join("")+`<option value="all">All rounds</option>`;
+  roundSel.value=roundStage;
+}
 function updateControls(){
   const across=current==="custom"||scopeMode==="all";
+  const rounds=hasRounds()&&scopeMode==="this", cup=isCup()&&scopeMode==="this";
   scopeSec.style.display=current==="custom"?"none":"block";
   scopeThis.classList.toggle("on",scopeMode==="this"); scopeAll.classList.toggle("on",scopeMode==="all");
   seasonField.style.display=across?"none":"block"; dateField.style.display=across?"block":"none";
+  roundSec.style.display=rounds?"block":"none"; if(rounds)fillRounds();
+  cupClubs.style.display=cup?"flex":"none";
+  cupNotableBtn.classList.toggle("on",cupNotable); cupAllBtn.classList.toggle("on",!cupNotable);
   startI.value=startDate; endI.value=endDate;
 }
+roundSel.onchange=()=>{roundStage=roundSel.value;render();};
+cupNotableBtn.onclick=()=>{cupNotable=true;updateControls();render();};
+cupAllBtn.onclick=()=>{cupNotable=false;updateControls();render();};
 scopeThis.onclick=()=>{scopeMode="this";updateControls();render();};
 scopeAll.onclick=()=>{scopeMode="all";updateControls();render();};
 seasonSel.onchange=()=>{seasonValue=seasonSel.value;render();};
@@ -464,8 +496,11 @@ async function init(){
     await Promise.all(man.competitions.map(async c=>{DATA[c.code]=await get(`data/${c.code}.json`);}));
     ORDER=man.competitions.filter(c=>DATA[c.code]).map(c=>[c.code,DATA[c.code].name||c.name]);
     ORDER.push(["custom","Custom view"]);
+    notableSet=new Set();
+    for(const c of Object.values(DATA)) if(c.type!=="cup") Object.keys(c.teams).forEach(id=>notableSet.add(id));
     current=ORDER[0][0];
     seasonValue=(seasonsOf()[0]||{}).id||"";
+    roundStage=hasRounds()?defaultStage(DATA[current].matches):"all";
     document.getElementById("stamp").textContent=`Data last refreshed ${new Date(man.updated).toISOString().slice(11,16)} UTC. All times in UTC.`;
     buildTabs(); fillSeasons(); updateControls(); render();
   }catch(e){
