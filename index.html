@@ -6,7 +6,7 @@
 <title>fulboo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;900&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.9/standalone/umd/vis-network.min.js"></script>
 <style>
   :root{
@@ -17,7 +17,7 @@
   }
   *{box-sizing:border-box;border-radius:0}
   html,body{margin:0;height:100%}
-  body{color:var(--ink);font-family:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;overflow:hidden;background:#050206}
+  body{color:var(--ink);font-family:"Hanken Grotesk",ui-sans-serif,system-ui,sans-serif;overflow:hidden;background:#050206}
   a{color:var(--accent);text-decoration:none}
 
   #bg{position:fixed;inset:0;z-index:-4;pointer-events:none;display:block}
@@ -52,19 +52,26 @@
     color:var(--ink);margin:0 0 11px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex:none}
   .sec h4 span{color:var(--ink);font-weight:600}
 
-  .legend-bar{height:8px;background:linear-gradient(90deg,var(--stale),var(--fresh))}
-  .legend-ends{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;color:var(--faint);margin-top:5px;font-style:italic}
-  .legend-ends span:last-child{text-align:right}
+  .crestdot{width:15px;height:15px;border-radius:50%;object-fit:contain;flex:none;vertical-align:middle}
+  [data-team]{cursor:pointer}
+  .actbtn{width:100%;font-family:"Unbounded",sans-serif;font-weight:600;font-size:10.5px;font-variant-caps:all-small-caps;letter-spacing:.05em;color:var(--ink);background:var(--panel-2);border:1px solid var(--line);padding:9px;cursor:pointer;transition:.12s}
+  .actbtn:hover{border-color:var(--accent);color:var(--accent)}
+  .actbtn.red{background:var(--accent);border-color:var(--accent);color:#fff}
+  .actbtn.red:hover{filter:brightness(1.15);color:#fff}
+  .toolopt{display:block;width:100%;text-align:left;font-family:"Hanken Grotesk",sans-serif;font-size:12.5px;color:var(--muted);background:var(--panel-2);border:1px solid var(--line);padding:7px 9px;margin-top:6px;cursor:pointer;transition:.12s}
+  .toolopt:hover{color:var(--ink);border-color:var(--accent)}
+  .cyc{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:7px 0;border-bottom:1px solid var(--line-soft)}
+  .beat{color:var(--faint);font-size:10px;font-variant-caps:all-small-caps;letter-spacing:.04em}
 
   .toggle{display:flex;gap:5px}
-  .toggle button{flex:1;min-width:0;font-family:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;font-size:12.5px;color:var(--muted);background:var(--panel-2);border:1px solid var(--line);border-radius:0;padding:7px 6px;cursor:pointer;transition:.12s}
+  .toggle button{flex:1;min-width:0;font-family:"Hanken Grotesk",ui-sans-serif,system-ui,sans-serif;font-size:12.5px;color:var(--muted);background:var(--panel-2);border:1px solid var(--line);border-radius:0;padding:7px 6px;cursor:pointer;transition:.12s}
   .toggle button:hover{color:var(--ink)} .toggle button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
   .field label{display:block;font-size:11px;font-variant-caps:all-small-caps;letter-spacing:.04em;color:var(--faint);margin-bottom:4px}
-  select,input[type=date]{width:100%;min-width:0;background:var(--panel-2);border:1px solid var(--line);border-radius:0;color:var(--ink);padding:7px 9px;font-family:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;font-size:13px;outline:none;color-scheme:dark}
+  select,input[type=date]{width:100%;min-width:0;background:var(--panel-2);border:1px solid var(--line);border-radius:0;color:var(--ink);padding:7px 9px;font-family:"Hanken Grotesk",ui-sans-serif,system-ui,sans-serif;font-size:13px;outline:none;color-scheme:dark}
   select:focus,input[type=date]:focus{border-color:var(--accent)}
   .dates{display:flex;gap:8px} .dates .field{flex:1;min-width:0}
 
-  .tbl{width:100%;border-collapse:collapse;font-size:12.5px;font-family:"Space Grotesk",ui-sans-serif,system-ui,sans-serif}
+  .tbl{width:100%;border-collapse:collapse;font-size:12.5px;font-family:"Hanken Grotesk",ui-sans-serif,system-ui,sans-serif}
   .tbl th{font-family:"Unbounded",sans-serif;font-weight:600;font-size:10px;font-variant-caps:all-small-caps;letter-spacing:.03em;color:var(--faint);text-align:right;padding:5px 6px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel);z-index:1}
   .tbl th:first-child,.tbl th:nth-child(2){text-align:left}
   .tbl td{padding:5px 6px;border-bottom:1px solid var(--line-soft);color:var(--muted);text-align:right}
@@ -76,7 +83,7 @@
   .sbox{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:0;color:var(--ink);padding:7px 9px;font-family:inherit;font-size:14px;outline:none;margin-bottom:9px}
   .sbox:focus{border-color:var(--accent)}
   .chips{display:flex;flex-wrap:wrap;gap:5px}
-  .chip{font-family:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;font-size:12px;padding:4px 8px;border-radius:0;border:1px solid var(--line);background:var(--panel-2);color:var(--muted);cursor:pointer;transition:.12s}
+  .chip{font-family:"Hanken Grotesk",ui-sans-serif,system-ui,sans-serif;font-size:12px;padding:4px 8px;border-radius:0;border:1px solid var(--line);background:var(--panel-2);color:var(--muted);cursor:pointer;transition:.12s}
   .chip:hover{color:var(--ink)} .chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
   #customSec{display:none}
 
@@ -126,30 +133,31 @@
 
 <aside class="rail left">
   <div class="sec"><a class="back" href="#">&larr; twosodium</a></div>
-  <div class="sec">
-    <h4>edge colour</h4>
-    <div class="legend-bar"></div>
-    <div class="legend-ends"><span>Even / little recent data</span><span>One-sided in recent data</span></div>
+  <div class="sec" id="seasonSec"><h4>seasons</h4><select id="season"></select></div>
+  <div class="sec" id="roundSec" style="display:none">
+    <h4>selected teams</h4>
+    <select id="round"></select>
+    <div class="toggle" id="cupClubs" style="margin-top:10px"><button id="cupNotableBtn" class="on">Clubs with data</button><button id="cupAllBtn">All clubs</button></div>
   </div>
   <div class="sec" id="scopeSec">
     <h4>scope</h4>
     <div class="toggle"><button id="scopeThis" class="on">This competition</button><button id="scopeAll">Across competitions</button></div>
   </div>
-  <div class="sec" id="windowSec">
-    <div id="seasonField"><h4>seasons</h4><select id="season"></select></div>
-    <div id="dateField" style="display:none"><h4>date range</h4>
-      <div class="dates"><div class="field"><label>from</label><input type="date" id="start"></div><div class="field"><label>to</label><input type="date" id="end"></div></div>
-    </div>
-  </div>
-  <div class="sec" id="roundSec" style="display:none">
-    <h4>rounds</h4>
-    <select id="round"></select>
-    <div class="toggle" id="cupClubs" style="margin-top:10px"><button id="cupNotableBtn" class="on">Clubs with data</button><button id="cupAllBtn">All clubs</button></div>
+  <div class="sec" id="dateSec" style="display:none">
+    <h4>match dates</h4>
+    <div class="dates"><div class="field"><label>from</label><input type="date" id="start"></div><div class="field"><label>to</label><input type="date" id="end"></div></div>
   </div>
   <div class="sec" id="customSec">
     <h4>your clubs <span id="customCount"></span></h4>
     <input class="sbox" id="sbox" placeholder="Filter clubs…" />
     <div class="chips" id="chips"></div>
+  </div>
+  <div class="sec" id="toolsSec">
+    <button class="actbtn red" id="toolsBtn">Graph tools</button>
+    <div id="toolsMenu" style="display:none">
+      <button class="toolopt" data-tool="cycle">Random beat-cycle &#8635;</button>
+      <button class="toolopt" data-tool="chain">Longest beat-chain</button>
+    </div>
   </div>
   <div class="sec grow">
     <h4>standings</h4>
@@ -171,13 +179,13 @@ const lastYearISO=new Date(NOW-365*DAY).toISOString().slice(0,10);
 let DATA={}, ORDER=[];
 
 // Engine state and helpers
-const BALANCE=0.34, SPAWN_ZOOM=1.1, PARALLAX_PAN=0.4, PARALLAX_ZOOM=0.5;
+const BALANCE=0.34, SPAWN_ZOOM=1.1, PARALLAX_PAN=0.4, PARALLAX_ZOOM=0.5, GOLDEN=2.399963229728653;
 const STAGED=new Set(["cl","el","conf"]);
 const hasRounds=()=>current!=="custom"&&DATA[current]&&(DATA[current].type==="cup"||STAGED.has(current));
 let current="", customSel=new Set(), scopeMode="this", seasonValue="", startDate=lastYearISO, endDate=todayISO, roundStage="all", cupNotable=true;
 let network, nodesDS, edgesDS, lastKey="", _ctx, starBase=null, needRebase=true, pinned=null, notableSet=new Set();
 const net=document.getElementById("net"), starsEl=document.getElementById("stars"), rightBody=document.getElementById("rightBody");
-const STALE=[0xe3,0xc2,0x3f], FRESH=[0x3f,0xd5,0x8a];
+const crestCol={};
 const allTeamsObj=()=>{const o={};for(const c of Object.values(DATA))Object.assign(o,c.teams);return o;};
 const pick=(obj,set)=>{const o={};set.forEach(id=>{if(obj[id])o[id]=obj[id];});return o;};
 const seasonsOf=()=>current==="custom"?[]:((DATA[current]&&DATA[current].seasons)||[]);
@@ -187,9 +195,45 @@ function orderedStages(ms){const first={};for(const m of ms){const s=m.stage||"?
 // Most recent stage that has already started
 function defaultStage(ms){const st=orderedStages(ms);let def=st[0]||"all";for(const s of st)if(ms.some(m=>(m.stage||"?")===s&&m.date<=todayISO))def=s;return def;}
 const yt=(a,b,date)=>`https://www.youtube.com/results?search_query=${encodeURIComponent(`${a} vs ${b} ${new Date(date).getFullYear()} highlights`)}`;
-const mix=(a,b,t)=>a.map((x,i)=>Math.round(x+(b[i]-x)*t));
+const _cc=document.createElement("canvas"); _cc.width=_cc.height=22;
+const _ccx=_cc.getContext("2d",{willReadFrequently:true});
 
-// Active date window from scope controls
+// Most common vivid color inside a crest image
+function dominantColor(img){
+  try{_ccx.clearRect(0,0,22,22);_ccx.drawImage(img,0,0,22,22);}catch{return null;}
+  let data; try{data=_ccx.getImageData(0,0,22,22).data;}catch{return null;}
+  const vivid={}, any={};
+  for(let i=0;i<data.length;i+=4){
+    if(data[i+3]<128)continue;
+    const r=data[i],g=data[i+1],b=data[i+2], k=(r>>4)+","+(g>>4)+","+(b>>4);
+    any[k]=(any[k]||0)+1;
+    const mx=Math.max(r,g,b),mn=Math.min(r,g,b);
+    if(mx-mn>38&&mx>45&&mx<248)vivid[k]=(vivid[k]||0)+1;
+  }
+  const top=o=>{let bk=null,bc=0;for(const k in o)if(o[k]>bc){bc=o[k];bk=k;}return bk;};
+  const k=top(vivid)||top(any); if(!k)return null;
+  const rgb=k.split(",").map(v=>Math.min(255,(+v)*16+8)), mx=Math.max(...rgb);
+  return mx<70?rgb.map(v=>Math.min(255,Math.round(v*70/(mx||1)))):rgb;
+}
+
+// Extract and cache crest colors then run done
+function loadCrestColors(ids,done){
+  const all=allTeamsObj(); let pending=0;
+  ids.forEach(id=>{
+    if(crestCol[id]!==undefined||!all[id]||!all[id].crest)return;
+    crestCol[id]=null; pending++;
+    const img=new Image();
+    img.onload=()=>{crestCol[id]=dominantColor(img); if(!--pending)done&&done();};
+    img.onerror=()=>{if(!--pending)done&&done();};
+    img.src=all[id].crest;
+  });
+  if(!pending)done&&done();
+}
+
+// Small crest or color dot for a club
+const dotHTML=t=>t&&t.crest?`<img class="crestdot" src="${t.crest}" alt="">`:`<span class="dot" style="background:${t?t.color:"#888"}"></span>`;
+
+// Active date window for shown matches
 function computeWindow(across){
   if(across)return {s:Date.parse(startDate),e:Date.parse(endDate)+DAY-1};
   const ss=seasonsOf();
@@ -198,6 +242,32 @@ function computeWindow(across){
   if(!se)return {s:0,e:Date.parse(todayISO)+DAY-1};
   const endISO=se.end>todayISO?todayISO:se.end;
   return {s:Date.parse(se.start),e:Date.parse(endISO)+DAY-1};
+}
+
+// Full season bounds for team membership
+function seasonBounds(){
+  const ss=seasonsOf();
+  if(!ss.length)return {s:0,e:Date.parse(todayISO)+DAY-1};
+  if(seasonValue.startsWith("last")){const n=+seasonValue.slice(4), oldest=ss[Math.min(n,ss.length)-1]||ss[ss.length-1];return {s:Date.parse(oldest.start),e:Date.parse(ss[0].end)+DAY-1};}
+  const se=ss.find(x=>x.id===seasonValue)||ss[0];
+  return {s:Date.parse(se.start),e:Date.parse(se.end)+DAY-1};
+}
+
+// Team set defining the visible nodes
+function focusTeams(){
+  if(current==="custom")return new Set(customSel);
+  const sb=seasonBounds(), useRound=hasRounds()&&roundStage!=="all";
+  let allow=null;
+  if(useRound){const order=orderedStages(DATA[current].matches), i=order.indexOf(roundStage);if(i>=0)allow=new Set(order.slice(i));}
+  let f=new Set();
+  for(const m of DATA[current].matches){
+    const t=Date.parse(m.date); if(t<sb.s||t>sb.e)continue;
+    if(allow&&!allow.has(m.stage||"?"))continue;
+    f.add(m.home); f.add(m.away);
+  }
+  if(!f.size&&!useRound)f=new Set(Object.keys(DATA[current].teams));
+  if(isCup()&&cupNotable){const n=new Set();f.forEach(id=>{if(notableSet.has(id))n.add(id);});f=n;}
+  return f;
 }
 
 // Shift starfield with viewport pan and zoom
@@ -245,33 +315,62 @@ function buildModel(teams,matches,filter,win){
   return {edges,rec,inW,outW,maxMargin,maxVol,pair,nMatches};
 }
 
-// Recenter view and rebase starfield
-function freezeAndRebase(){
+// Pin starfield to the current view
+function rebaseStars(){
+  starBase={p:network.getViewPosition(),s:network.getScale()};
+  starsEl.style.transform="translate(0,0) scale(1)"; needRebase=false; placeStars();
+}
+
+// Fit the radial layout then rebase starfield
+function settleView(){
   if(!needRebase)return;
-  requestAnimationFrame(()=>{
-    const vp=network.getViewPosition(), sc=network.getScale();
-    network.moveTo({position:{x:vp.x,y:vp.y},scale:sc*SPAWN_ZOOM});
-    starBase={p:network.getViewPosition(),s:network.getScale()};
-    starsEl.style.transform="translate(0,0) scale(1)"; needRebase=false; placeStars();
+  network.fit({animation:false});
+  const vp=network.getViewPosition(), sc=network.getScale();
+  network.moveTo({position:{x:vp.x,y:vp.y},scale:sc*SPAWN_ZOOM});
+  rebaseStars();
+}
+
+// Place nodes on rings by dominance rank weak at center
+function radialPlace(nodes,M){
+  const score=id=>(M.outW[id]||0)-(M.inW[id]||0);
+  const order=[...nodes].sort((a,b)=>score(a.id)-score(b.id));
+  const n=order.length, Rmax=Math.max(340,140*Math.sqrt(n));
+  order.forEach((node,j)=>{
+    const r=Rmax*Math.sqrt((j+0.5)/n), a=j*GOLDEN;
+    node.x=Math.round(Math.cos(a)*r); node.y=Math.round(Math.sin(a)*r);
   });
 }
+
+// Hidden anchor node pinning a club to its ring spot
+const anchorNode=n=>({id:"_a"+n.id,x:n.x,y:n.y,physics:false,hidden:true});
+const anchorSpring=n=>({id:"_s"+n.id,from:n.id,to:"_a"+n.id,hidden:true,physics:true,length:0});
+
+// Build one vis edge styled by winner color and certainty
+function edgeObj(x,maxMargin,maxVol){
+  const cT=x.margin/(maxMargin||1), wT=x.total/(maxVol||1);
+  const col=x.contested?[255,255,255]:(crestCol[x.from]||[150,150,162]);
+  const soft=`rgba(${col[0]},${col[1]},${col[2]},${(0.14+0.6*cT).toFixed(2)})`, full=`rgb(${col[0]},${col[1]},${col[2]})`;
+  return {id:x.pairKey,from:x.from,to:x.to,color:{color:soft,highlight:full,hover:full},width:+((0.8+3.4*cT)*(0.8+0.4*wT)).toFixed(2),
+    dashes:x.contested?[3,7]:false,
+    arrows:x.contested?{to:{enabled:true,scaleFactor:.6,type:"arrow"},from:{enabled:true,scaleFactor:.6,type:"arrow"}}:{to:{enabled:true,scaleFactor:.78,type:"arrow"}},
+    smooth:{type:"curvedCW",roundness:x.contested?0:0.12}};
+}
+
+// Recolor edges once crest colors load
+function recolorEdges(){ if(edgesDS&&_ctx)edgesDS.update(_ctx.edges.map(x=>edgeObj(x,_ctx.maxMargin,_ctx.maxVol))); }
 
 // Build graph and all side panels
 function render(){
   const isCustom=current==="custom", across=isCustom||scopeMode==="all";
-  const teams=isCustom?pick(allTeamsObj(),customSel):DATA[current].teams;
-  const ids=new Set(Object.keys(teams));
+  const focus=focusTeams();
+  const teams=pick(isCustom?allTeamsObj():DATA[current].teams,focus);
   let matches;
-  if(across){matches=[];for(const c of Object.values(DATA))matches=matches.concat(c.matches);matches=matches.filter(m=>ids.has(m.home)&&ids.has(m.away));}
+  if(across){matches=[];for(const c of Object.values(DATA))matches=matches.concat(c.matches);}
   else matches=DATA[current].matches;
-  if(hasRounds()&&!across&&roundStage!=="all"){
-    const order=orderedStages(DATA[current].matches), i=order.indexOf(roundStage);
-    if(i>=0){const allow=new Set(order.slice(i));matches=matches.filter(m=>allow.has(m.stage||"?"));}
-  }
-  if(isCup()&&!across&&cupNotable)matches=matches.filter(m=>notableSet.has(m.home)||notableSet.has(m.away));
+  matches=matches.filter(m=>focus.has(m.home)&&focus.has(m.away));
   const w=computeWindow(across), span=Math.max(1,(w.e-w.s)/DAY);
   const win={s:w.s,e:w.e,hl:Math.min(400,Math.max(20,span*0.4))};
-  const M=buildModel(teams,matches,isCustom?customSel:null,win);
+  const M=buildModel(teams,matches,focus,win);
   _ctx={teams,matches,win,...M};
 
   const shown=new Set(); M.edges.forEach(x=>{shown.add(x.from);shown.add(x.to);});
@@ -280,38 +379,36 @@ function render(){
     if(isCustom){if(!shown.has(id)&&!customSel.has(id))return;}
     else{const r=M.rec[id];if(!r||r.w+r.d+r.l===0)return;}
     const dom=(M.outW[id]||0)-(M.inW[id]||0), fallback=teamImg(teams[id].short,teams[id].color), crest=teams[id].crest;
-    nodes.push({id,shape:crest?"circularImage":"image",image:crest||fallback,brokenImage:fallback,size:20+Math.max(0,dom)*5.5,label:teams[id].name,
-      font:{color:"#ffffff",face:"Space Grotesk",size:14,strokeWidth:5,strokeColor:"#040309",vadjust:-3}});
+    nodes.push({id,shape:crest?"circularImage":"image",image:crest||fallback,brokenImage:fallback,size:30+Math.max(0,dom)*6,label:teams[id].name,
+      font:{color:"#ffffff",face:"Hanken Grotesk",size:14,strokeWidth:3,strokeColor:"#040309",background:"rgba(5,3,10,0.68)",vadjust:3}});
   });
-  const visEdges=M.edges.map(x=>{
-    const cT=x.margin/M.maxMargin, wT=x.total/M.maxVol, c=mix(STALE,FRESH,cT);
-    const soft=`rgba(${c[0]},${c[1]},${c[2]},${(0.4+0.45*wT).toFixed(2)})`, full=`rgb(${c[0]},${c[1]},${c[2]})`;
-    return {id:x.pairKey,from:x.from,to:x.to,color:{color:soft,highlight:full,hover:full},width:1.6+wT*5,
-      dashes:x.contested?[3,7]:false,
-      arrows:x.contested?{to:{enabled:true,scaleFactor:.34,type:"arrow"},from:{enabled:true,scaleFactor:.34,type:"arrow"}}:{to:{enabled:true,scaleFactor:.4,type:"arrow"}},
-      smooth:{type:"curvedCW",roundness:x.contested?0:0.12}};
-  });
+  const visEdges=M.edges.map(x=>edgeObj(x,M.maxMargin,M.maxVol));
+  const need=[]; M.edges.forEach(x=>{if(!x.contested&&crestCol[x.from]===undefined)need.push(x.from);});
+  if(need.length)loadCrestColors(need,recolorEdges);
+  radialPlace(nodes,M);
+  const allNodes=nodes.concat(nodes.map(anchorNode)), allEdges=visEdges.concat(nodes.map(anchorSpring));
   const key=nodes.map(n=>n.id).sort().join(",");
-  const opts={physics:{barnesHut:{gravitationalConstant:-12000,centralGravity:0.18,springLength:230,springConstant:.02,damping:.5,avoidOverlap:.6},stabilization:{iterations:220}},interaction:{hover:true,tooltipDelay:1e9,hideEdgesOnDrag:false},nodes:{borderWidth:0,chosen:{label:false,node:(v,id,sel,hov)=>{if(hov)v.size*=1.45;}}}};
+  const opts={physics:{barnesHut:{gravitationalConstant:-3200,centralGravity:0,springLength:0,springConstant:0.055,damping:0.5,avoidOverlap:0.3},stabilization:{iterations:130}},edges:{physics:false},interaction:{hover:true,tooltipDelay:1e9,hideEdgesOnDrag:false},nodes:{borderWidth:0,color:{background:"rgba(0,0,0,0)",border:"rgba(0,0,0,0)",highlight:{background:"rgba(0,0,0,0)",border:"rgba(0,0,0,0)"},hover:{background:"rgba(0,0,0,0)",border:"rgba(0,0,0,0)"}},chosen:{label:false,node:(v,id,sel,hov)=>{if(hov)v.size*=1.45;}}}};
   if(!network){
-    nodesDS=new vis.DataSet(nodes); edgesDS=new vis.DataSet(visEdges);
+    nodesDS=new vis.DataSet(allNodes); edgesDS=new vis.DataSet(allEdges);
     network=new vis.Network(net,{nodes:nodesDS,edges:edgesDS},opts);
     network.on("hoverNode",p=>renderNode(p.node));
     network.on("hoverEdge",p=>renderEdge(p.edge));
     network.on("blurNode",restore); network.on("blurEdge",restore);
     network.on("click",p=>{
+      recolorEdges();
       if(p.nodes.length){pinned={t:"n",id:p.nodes[0]};renderNode(p.nodes[0]);}
       else if(p.edges.length){pinned={t:"e",id:p.edges[0]};renderEdge(p.edges[0]);}
       else{pinned=null;renderRightDefault();}
     });
     network.on("dragging",placeStars); network.on("zoom",placeStars); network.on("dragEnd",placeStars);
-    network.on("stabilizationIterationsDone",freezeAndRebase);
+    network.on("stabilizationIterationsDone",settleView);
   } else if(key===lastKey){
-    nodesDS.update(nodes.map(n=>({id:n.id,size:n.size})));
-    edgesDS.clear(); edgesDS.add(visEdges);
+    nodesDS.update(nodes.map(n=>({id:n.id,size:n.size})).concat(nodes.map(anchorNode)));
+    edgesDS.update(visEdges);
   } else {
     needRebase=true;
-    nodesDS.clear(); nodesDS.add(nodes); edgesDS.clear(); edgesDS.add(visEdges); network.stabilize();
+    nodesDS.clear(); nodesDS.add(allNodes); edgesDS.clear(); edgesDS.add(allEdges); network.stabilize();
   }
   lastKey=key; pinned=null;
   renderStandings(teams,M); renderOverview(teams,M); renderRightDefault();
@@ -320,7 +417,7 @@ function render(){
 // Render ranked standings table
 function renderStandings(teams,M){
   const ranked=Object.keys(M.rec).map(id=>({id,...M.rec[id],net:(M.outW[id]||0)-(M.inW[id]||0)})).filter(r=>r.w+r.d+r.l>0).sort((a,b)=>b.net-a.net);
-  document.getElementById("standings").innerHTML=ranked.map((r,i)=>`<tr><td class="rank">${i+1}</td><td class="club"><span class="dot" style="background:${teams[r.id].color}"></span>${teams[r.id].name}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td></tr>`).join("")
+  document.getElementById("standings").innerHTML=ranked.map((r,i)=>`<tr data-team="${r.id}"><td class="rank">${i+1}</td><td class="club">${dotHTML(teams[r.id])}${teams[r.id].name}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td></tr>`).join("")
     || `<tr><td colspan="5" style="color:var(--faint);text-align:center;padding:14px">no games in this window</td></tr>`;
 }
 
@@ -333,7 +430,7 @@ function mrow(m,showDate){
   const mid=up?`<span class="vs">vs</span>`:`<span class="sc">${m.hg}–${m.ag}</span>`;
   const when=showDate?`${m.date} ${m.time}`:`${m.time}`;
   const ytl=up?"":`<a class="yt" target="_blank" rel="noopener" title="highlights on YouTube" href="${yt(t[m.home].name,t[m.away].name,m.date)}">►</a>`;
-  return `<div class="m"><div class="when">${when}</div><div class="row2"><span class="opp"><span class="tm"><span class="dot" style="background:${t[m.home].color}"></span>${t[m.home].name}</span> ${mid} <span class="tm"><span class="dot" style="background:${t[m.away].color}"></span>${t[m.away].name}</span></span>${ytl}</div></div>`;
+  return `<div class="m"><div class="when">${when}</div><div class="row2"><span class="opp"><span class="tm" data-team="${m.home}">${dotHTML(t[m.home])}${t[m.home].name}</span> ${mid} <span class="tm" data-team="${m.away}">${dotHTML(t[m.away])}${t[m.away].name}</span></span>${ytl}</div></div>`;
 }
 
 // Render overview stats
@@ -363,12 +460,79 @@ function renderRightDefault(){
 // Show hovered or pinned detail fallback
 function restore(){ if(!pinned)renderRightDefault(); else if(pinned.t==="n")renderNode(pinned.id); else renderEdge(pinned.id); }
 
+// Highlight and focus a club from a side panel
+function selectTeam(id){
+  if(!network||!nodesDS||!nodesDS.get(id))return;
+  pinned={t:"n",id}; network.selectNodes([id]);
+  network.focus(id,{scale:Math.max(network.getScale(),1.1),animation:{duration:400,easingFunction:"easeInOutQuad"}});
+  network.once("animationFinished",placeStars);
+  renderNode(id);
+}
+
+// Directed beats graph from decisive edges
+function beatsAdj(){const adj={}; if(_ctx)_ctx.edges.forEach(x=>{if(!x.contested)(adj[x.from]=adj[x.from]||[]).push(x.to);});return adj;}
+
+// Find a random beat cycle in the graph
+function findCycle(){
+  const adj=beatsAdj(), tri=[];
+  for(const a in adj)for(const b of adj[a]){if(!adj[b])continue;for(const c of adj[b])if(c!==a&&a!==b&&b!==c&&adj[c]&&adj[c].includes(a))tri.push([a,b,c]);}
+  if(tri.length)return tri[Math.floor(Math.random()*tri.length)];
+  const nodes=Object.keys(adj);
+  for(let t=0;t<400;t++){
+    let cur=nodes[Math.floor(Math.random()*nodes.length)]; const start=cur, path=[cur], seen=new Set([cur]);
+    for(let s=0;s<14;s++){
+      const outs=adj[cur]; if(!outs||!outs.length)break;
+      const nx=outs[Math.floor(Math.random()*outs.length)];
+      if(nx===start&&path.length>=3)return path;
+      if(seen.has(nx))break;
+      seen.add(nx); path.push(nx); cur=nx;
+    }
+  }
+  return null;
+}
+
+// Longest beat chain via randomized walks
+function longestChain(){
+  const adj=beatsAdj(), nodes=Object.keys(adj); if(!nodes.length)return null;
+  let best=[];
+  for(let t=0;t<5000;t++){
+    let u=nodes[Math.floor(Math.random()*nodes.length)]; const path=[u], seen=new Set([u]);
+    while(true){const outs=(adj[u]||[]).filter(v=>!seen.has(v)); if(!outs.length)break; u=outs[Math.floor(Math.random()*outs.length)]; seen.add(u); path.push(u);}
+    if(path.length>best.length)best=path;
+  }
+  return best.length>=2?best:null;
+}
+
+// Emphasize sequence edges and dim the rest
+function emphasize(set){
+  edgesDS.update(_ctx.edges.map(x=>{
+    const e=edgeObj(x,_ctx.maxMargin,_ctx.maxVol);
+    if(set.has(x.pairKey)){const col=x.contested?"255,255,255":(crestCol[x.from]||[150,150,162]).join(",");e.width=+e.width+6;e.color={color:`rgb(${col})`,highlight:`rgb(${col})`,hover:`rgb(${col})`};}
+    else{const faint="rgba(120,122,140,0.05)";e.color={color:faint,highlight:faint,hover:faint};}
+    return e;
+  }));
+}
+
+// Highlight a sequence of clubs and describe the wins
+function showSequence(ids,label,sub,loop,empty){
+  if(!ids||ids.length<(loop?3:2)){rightBody.innerHTML=`<p class="hint">${empty}</p>`; return;}
+  const n=ids.length, lim=loop?n:n-1, pairs=[];
+  for(let i=0;i<lim;i++)pairs.push([ids[i],ids[(i+1)%n]]);
+  emphasize(new Set(pairs.map(([a,b])=>a<b?a+"|"+b:b+"|"+a)));
+  network.selectNodes(ids,false);
+  network.fit({nodes:ids,animation:{duration:500,easingFunction:"easeInOutQuad"}});
+  network.once("animationFinished",placeStars);
+  pinned=null;
+  const t=_ctx.teams, rows=pairs.map(([a,b])=>`<div class="cyc"><span class="tm" data-team="${a}">${dotHTML(t[a])}${t[a].name}</span> <span class="beat">beat</span> <span class="tm" data-team="${b}">${dotHTML(t[b])}${t[b].name}</span></div>`).join("");
+  rightBody.innerHTML=`<div class="dhead"><p class="flabel">${label}</p><p class="dnm">${sub}</p></div>${rows}`;
+}
+
 // Render one club detail
 function renderNode(id){
   const {teams,rec}=_ctx, r=rec[id]; if(!r){restore();return;}
   const form=r.form.slice(-5).map(f=>`<div class="fdot" style="background:${f==="W"?"var(--fresh)":f==="D"?"var(--stale)":"var(--loss)"}">${f}</div>`).join("")||'<span class="hint">no games</span>';
-  const games=[...r.games].sort((a,b)=>a.date<b.date?1:-1).map(gm=>`<div class="m"><div class="when"><span class="res ${gm.res}">${gm.res}</span>${gm.date} ${gm.time}</div><div class="row2"><span class="opp"><span class="tm"><span class="dot" style="background:${teams[gm.opp].color}"></span>${teams[gm.opp].name}</span> <span class="sc">${gm.gf}–${gm.ga}</span></span><a class="yt" target="_blank" rel="noopener" title="highlights on YouTube" href="${yt(teams[id].name,teams[gm.opp].name,gm.date)}">►</a></div></div>`).join("");
-  rightBody.innerHTML=`<div class="dhead"><p class="dnm"><span class="tm"><span class="dot" style="background:${teams[id].color}"></span>${teams[id].name}</span></p>
+  const games=[...r.games].sort((a,b)=>a.date<b.date?1:-1).map(gm=>`<div class="m"><div class="when"><span class="res ${gm.res}">${gm.res}</span>${gm.date} ${gm.time}</div><div class="row2"><span class="opp"><span class="tm" data-team="${gm.opp}">${dotHTML(teams[gm.opp])}${teams[gm.opp].name}</span> <span class="sc">${gm.gf}–${gm.ga}</span></span><a class="yt" target="_blank" rel="noopener" title="highlights on YouTube" href="${yt(teams[id].name,teams[gm.opp].name,gm.date)}">►</a></div></div>`).join("");
+  rightBody.innerHTML=`<div class="dhead"><p class="dnm"><span class="tm" data-team="${id}">${dotHTML(teams[id])}${teams[id].name}</span></p>
     <div class="rec"><span class="pill w">${r.w} W</span><span class="pill d">${r.d} D</span><span class="pill l">${r.l} L</span></div>
     <p class="flabel">recent form</p><div class="form">${form}</div><p class="flabel">results</p></div>
     <div class="mlist">${games||'<span class="hint">—</span>'}</div>`;
@@ -379,7 +543,7 @@ function renderEdge(pairKey){
   const {teams,pair}=_ctx, p=pair[pairKey]; if(!p){restore();return;}
   let wa=0,wb=0,dr=0; p.matches.forEach(m=>{const win=m.hg>m.ag?m.home:m.hg<m.ag?m.away:null; if(!win)dr++; else if(win===p.a)wa++; else wb++;});
   const games=[...p.matches].sort((a,b)=>a.date<b.date?1:-1).map(m=>mrow(m,true)).join("");
-  rightBody.innerHTML=`<div class="dhead"><p class="dnm"><span class="tm"><span class="dot" style="background:${teams[p.a].color}"></span>${teams[p.a].name}</span> <span class="vs">vs</span> <span class="tm"><span class="dot" style="background:${teams[p.b].color}"></span>${teams[p.b].name}</span></p>
+  rightBody.innerHTML=`<div class="dhead"><p class="dnm"><span class="tm" data-team="${p.a}">${dotHTML(teams[p.a])}${teams[p.a].name}</span> <span class="vs">vs</span> <span class="tm" data-team="${p.b}">${dotHTML(teams[p.b])}${teams[p.b].name}</span></p>
     <div class="rec"><span class="pill w">${teams[p.a].short} ${wa}</span><span class="pill d">${dr} drawn</span><span class="pill l">${teams[p.b].short} ${wb}</span></div>
     <p class="flabel">meetings</p></div><div class="mlist">${games}</div>`;
 }
@@ -414,27 +578,36 @@ tabNext.onclick=()=>tabsEl.scrollBy({left:170,behavior:"smooth"});
 tabsEl.addEventListener("scroll",updateArrows); addEventListener("resize",updateArrows);
 updateArrows();
 
-// Scope toggle season dropdown and calendar
+// Season round and scope controls
 const seasonSel=document.getElementById("season"), startI=document.getElementById("start"), endI=document.getElementById("end");
-const scopeThis=document.getElementById("scopeThis"), scopeAll=document.getElementById("scopeAll"), scopeSec=document.getElementById("scopeSec"), seasonField=document.getElementById("seasonField"), dateField=document.getElementById("dateField");
+const scopeThis=document.getElementById("scopeThis"), scopeAll=document.getElementById("scopeAll"), scopeSec=document.getElementById("scopeSec"), seasonSec=document.getElementById("seasonSec"), dateSec=document.getElementById("dateSec");
 const roundSec=document.getElementById("roundSec"), roundSel=document.getElementById("round");
 const cupNotableBtn=document.getElementById("cupNotableBtn"), cupAllBtn=document.getElementById("cupAllBtn"), cupClubs=document.getElementById("cupClubs");
 function fillSeasons(){const ss=seasonsOf();seasonSel.innerHTML=ss.map(s=>`<option value="${s.id}">${s.label}</option>`).join("")+(ss.length>1?`<option value="last2">last 2 seasons</option>`:"")+(ss.length>2?`<option value="last3">last 3 seasons</option>`:"");seasonSel.value=seasonValue;}
 function fillRounds(){
-  roundSel.innerHTML=orderedStages(DATA[current].matches).map(s=>`<option value="${s}">${s}</option>`).join("")+`<option value="all">All rounds</option>`;
+  roundSel.innerHTML=orderedStages(DATA[current].matches).map(s=>`<option value="${s}">${s}</option>`).join("")+`<option value="all">All teams</option>`;
   roundSel.value=roundStage;
 }
 function updateControls(){
-  const across=current==="custom"||scopeMode==="all";
-  const rounds=hasRounds()&&scopeMode==="this", cup=isCup()&&scopeMode==="this";
-  scopeSec.style.display=current==="custom"?"none":"block";
-  scopeThis.classList.toggle("on",scopeMode==="this"); scopeAll.classList.toggle("on",scopeMode==="all");
-  seasonField.style.display=across?"none":"block"; dateField.style.display=across?"block":"none";
+  const custom=current==="custom", across=custom||scopeMode==="all";
+  const rounds=hasRounds(), cup=isCup();
+  seasonSec.style.display=custom?"none":"block";
   roundSec.style.display=rounds?"block":"none"; if(rounds)fillRounds();
   cupClubs.style.display=cup?"flex":"none";
   cupNotableBtn.classList.toggle("on",cupNotable); cupAllBtn.classList.toggle("on",!cupNotable);
+  scopeSec.style.display=custom?"none":"block";
+  scopeThis.classList.toggle("on",scopeMode==="this"); scopeAll.classList.toggle("on",scopeMode==="all");
+  dateSec.style.display=across?"block":"none";
   startI.value=startDate; endI.value=endDate;
 }
+const toolsBtn=document.getElementById("toolsBtn"), toolsMenu=document.getElementById("toolsMenu");
+toolsBtn.onclick=()=>{toolsMenu.style.display=toolsMenu.style.display==="none"?"block":"none";};
+toolsMenu.addEventListener("click",e=>{const b=e.target.closest(".toolopt");if(!b)return;
+  if(b.dataset.tool==="cycle")showSequence(findCycle(),"beat cycle","football logic",true,"No beat-cycle in this view. Try a league or Across mode.");
+  else{const c=longestChain();showSequence(c,"longest beat-chain",(c?c.length-1:0)+" wins deep",false,"No chain in this view.");}
+});
+document.querySelector(".rail.left").addEventListener("click",e=>{const el=e.target.closest("[data-team]");if(el)selectTeam(el.dataset.team);});
+rightBody.addEventListener("click",e=>{const el=e.target.closest("[data-team]");if(el)selectTeam(el.dataset.team);});
 roundSel.onchange=()=>{roundStage=roundSel.value;render();};
 cupNotableBtn.onclick=()=>{cupNotable=true;updateControls();render();};
 cupAllBtn.onclick=()=>{cupNotable=false;updateControls();render();};

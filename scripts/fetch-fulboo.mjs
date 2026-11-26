@@ -5,7 +5,7 @@ const KEY = process.env.SPORTAPI_KEY;
 if (!KEY) { console.error("Missing SPORTAPI_KEY"); process.exit(1); }
 
 const HOST = "https://sportapi.ai/api";
-const ESPN = id => `https://a.espncdn.com/i/teamlogos/soccer/500/${id}.png`;
+const LOGO = file => `https://sportapi.ai/logos/${file}`;
 const FINISHED = new Set(["FT", "AET", "PENS"]);
 const STOP = new Set(["FC","CF","AC","SC","AS","SS","SSC","RC","UD","CD","CA","AFC","CP","US","SV","1","II"]);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -42,7 +42,25 @@ function color(name) {
   let h = 0; for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) % 360;
   return `hsl(${h} 62% 55%)`;
 }
-const espnId = file => (String(file || "").match(/(\d+)/) || [])[1] || null;
+const logoName = v => v ? String(v).replace(/[^\w.-]/g, "_") : null;
+
+// pad an svg into a square so circular crop fits
+function padSvg(svg) {
+  svg = svg.replace(/<\?xml[^>]*\?>/i, "").trim();
+  const open = svg.match(/<svg[^>]*>/i);
+  if (!open) return svg;
+  const tag = open[0];
+  const vb = tag.match(/viewBox\s*=\s*["']\s*([\d.+-]+)[,\s]+([\d.+-]+)[,\s]+([\d.+-]+)[,\s]+([\d.+-]+)/i);
+  const wa = tag.match(/\bwidth\s*=\s*["']([\d.]+)/i), ha = tag.match(/\bheight\s*=\s*["']([\d.]+)/i);
+  const w = vb ? +vb[3] : (wa ? +wa[1] : 0), h = vb ? +vb[4] : (ha ? +ha[1] : 0);
+  if (!w || !h) return svg;
+  const C = Math.max(w, h), s = 0.66 * C / Math.max(w, h), iw = w * s, ih = h * s, x = (C - iw) / 2, y = (C - ih) / 2;
+  let inner = tag;
+  if (!vb) inner = inner.replace(/<svg/i, `<svg viewBox="0 0 ${w} ${h}"`);
+  inner = inner.replace(/\s(width|height|x|y)\s*=\s*["'][^"']*["']/gi, "");
+  inner = inner.replace(/<svg/i, `<svg x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${iw.toFixed(1)}" height="${ih.toFixed(1)}"`);
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${C}" height="${C}" viewBox="0 0 ${C} ${C}">${svg.replace(open[0], inner)}</svg>`;
+}
 
 async function api(path) {
   const res = await fetch(`${HOST}/${path}`, { headers: { "X-Api-Key": KEY } });
@@ -58,7 +76,7 @@ function dates(a, b) {
 }
 
 const comps = {};             // code to {teams, matches}
-const logos = new Map();      // espnId to filename
+const logos = new Map();      // saved filename to source value
 for (const [, { code, name }] of [...BYID]) comps[code] = { name, teams: {}, matches: [] };
 
 let calls = 0;
@@ -70,10 +88,10 @@ for (const day of dates(FROM, TO)) {
     const meta = BYID.get(f.league_id); if (!meta) continue;
     const c = comps[meta.code];
     for (const side of ["home", "away"]) {
-      const id = String(f[`${side}_id`]), eid = espnId(f[`${side}_logo`]);
-      if (!c.teams[id]) c.teams[id] = { name: f[`${side}_team`], short: shortName(f[`${side}_team`]), color: color(f[`${side}_team`]), crest: eid ? `data/logos/${eid}.png` : null };
-      else if (eid && !c.teams[id].crest) c.teams[id].crest = `data/logos/${eid}.png`;
-      if (eid) logos.set(eid, true);
+      const id = String(f[`${side}_id`]), raw = f[`${side}_logo`], file = logoName(raw);
+      if (!c.teams[id]) c.teams[id] = { name: f[`${side}_team`], short: shortName(f[`${side}_team`]), color: color(f[`${side}_team`]), crest: file ? `data/logos/${file}` : null };
+      else if (file && !c.teams[id].crest) c.teams[id].crest = `data/logos/${file}`;
+      if (file) logos.set(file, raw);
     }
     const done = FINISHED.has(f.status), iso = f.kickoff_utc || "";
     c.matches.push({ date: iso.slice(0, 10) || f.date, time: iso.slice(11, 16), home: String(f.home_id), away: String(f.away_id),
@@ -84,12 +102,12 @@ for (const day of dates(FROM, TO)) {
 
 // download club crests into data/logos (skip if already present)
 await mkdir("data/logos", { recursive: true });
-const ids = [...logos.keys()];
-for (let i = 0; i < ids.length; i += 8) {
-  await Promise.all(ids.slice(i, i + 8).map(async id => {
-    const path = `data/logos/${id}.png`;
+const files = [...logos.entries()];
+for (let i = 0; i < files.length; i += 8) {
+  await Promise.all(files.slice(i, i + 8).map(async ([file, raw]) => {
+    const path = `data/logos/${file}`;
     try { await access(path); return; } catch {}
-    try { const r = await fetch(ESPN(id)); if (r.ok) await writeFile(path, Buffer.from(await r.arrayBuffer())); } catch {}
+    try { const r = await fetch(LOGO(raw)); if (r.ok) await writeFile(path, Buffer.from(await r.arrayBuffer())); } catch {}
   }));
 }
 
@@ -104,4 +122,4 @@ for (const [, code, name] of COMPS) {
   console.log(`${code} ${Object.keys(c.teams).length} teams ${c.matches.length} matches`);
 }
 await writeFile("data/manifest.json", JSON.stringify({ updated: new Date().toISOString(), competitions: out }));
-console.log(`season ${SLUG}, ${calls} day-calls, ${ids.length} logos, ${out.length} competitions`);
+console.log(`season ${SLUG}, ${calls} day-calls, ${files.length} logos, ${out.length} competitions`);
