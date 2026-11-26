@@ -59,7 +59,7 @@ function padSvg(svg) {
   if (!vb) inner = inner.replace(/<svg/i, `<svg viewBox="0 0 ${w} ${h}"`);
   inner = inner.replace(/\s(width|height|x|y)\s*=\s*["'][^"']*["']/gi, "");
   inner = inner.replace(/<svg/i, `<svg x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${iw.toFixed(1)}" height="${ih.toFixed(1)}"`);
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${C}" height="${C}" viewBox="0 0 ${C} ${C}">${svg.replace(open[0], inner)}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 ${C} ${C}">${svg.replace(open[0], inner)}</svg>`;
 }
 
 async function api(path) {
