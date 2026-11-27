@@ -116,6 +116,19 @@
   .flabel{font-family:"Unbounded",sans-serif;font-size:10px;font-variant-caps:all-small-caps;letter-spacing:.05em;color:var(--faint);margin:0 0 6px}
   .form{display:flex;gap:4px;margin-bottom:13px;flex-wrap:wrap}
   .fdot{width:18px;height:18px;border-radius:0;font-size:10px;font-weight:700;color:#0a0a12;display:flex;align-items:center;justify-content:center;font-family:"Unbounded",sans-serif}
+
+  /* stacked single-column scroll on phones: graph, then right pane, then left pane */
+  @media (max-width:760px){
+    html{height:auto}
+    body{display:flex;flex-direction:column;height:auto;min-height:100%;overflow-x:hidden;overflow-y:auto}
+    .topcenter{position:static;left:auto;right:auto;order:1;width:100%;padding:16px 16px 12px}
+    #net{position:relative;inset:auto;order:2;width:100%;height:70vh;flex:none;border-bottom:1px solid var(--line)}
+    .rail{position:static;width:100%;height:auto;border:none}
+    .rail.right{order:3;border-top:1px solid var(--line)}
+    .rail.left{order:4;border-top:1px solid var(--line)}
+    .sec.grow,.scroll-y,.mlist,#rightBody,.block{flex:none;min-height:0;height:auto;overflow:visible}
+    .tbl th{position:static}
+  }
 </style>
 </head>
 <body>
