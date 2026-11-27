@@ -117,6 +117,7 @@
   .form{display:flex;gap:4px;margin-bottom:13px;flex-wrap:wrap}
   .fdot{width:18px;height:18px;border-radius:0;font-size:10px;font-weight:700;color:#0a0a12;display:flex;align-items:center;justify-content:center;font-family:"Unbounded",sans-serif}
 
+  .backbot{display:none}
   /* stacked single-column scroll on phones: graph, then right pane, then left pane */
   @media (max-width:760px){
     html{height:auto}
@@ -124,10 +125,12 @@
     .topcenter{position:static;left:auto;right:auto;order:1;width:100%;padding:16px 16px 12px}
     #net{position:relative;inset:auto;order:2;width:100%;height:70vh;flex:none;border-bottom:1px solid var(--line)}
     .rail{position:static;width:100%;height:auto;border:none}
-    .rail.right{order:3;border-top:1px solid var(--line)}
-    .rail.left{order:4;border-top:1px solid var(--line)}
+    .rail.right{order:3;width:100%;border-top:1px solid var(--line)}
+    .rail.left{order:4;width:100%;border-top:1px solid var(--line)}
     .sec.grow,.scroll-y,.mlist,#rightBody,.block{flex:none;min-height:0;height:auto;overflow:visible}
     .tbl th{position:static}
+    .backtop{display:none}
+    .backbot{display:block}
   }
 </style>
 </head>
@@ -145,7 +148,7 @@
 <div id="net"></div>
 
 <aside class="rail left">
-  <div class="sec"><a class="back" href="#">&larr; twosodium</a></div>
+  <div class="sec backtop"><a class="back" href="#">&larr; twosodium</a></div>
   <div class="sec" id="seasonSec"><h4>seasons</h4><select id="season"></select></div>
   <div class="sec" id="roundSec" style="display:none">
     <h4>selected teams</h4>
@@ -176,12 +179,14 @@
     <h4>standings</h4>
     <div class="scroll-y"><table class="tbl"><thead><tr><th>#</th><th>club</th><th>W</th><th>D</th><th>L</th></tr></thead><tbody id="standings"></tbody></table></div>
   </div>
+  <div class="sec backbot"><a class="back" href="#">&larr; twosodium</a></div>
 </aside>
 
 <aside class="rail right">
   <div class="sec"><div class="stamp" id="stamp"></div></div>
   <div class="sec"><h4>overview <span id="ovScope"></span></h4><div id="overview"></div></div>
   <div class="sec grow"><div id="rightBody"></div></div>
+  <div class="sec backbot"><a class="back" href="#">&larr; twosodium</a></div>
 </aside>
 
 <script>
