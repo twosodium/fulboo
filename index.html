@@ -490,23 +490,24 @@ function selectTeam(id){
 // Directed beats graph from decisive edges
 function beatsAdj(){const adj={}; if(_ctx)_ctx.edges.forEach(x=>{if(!x.contested)(adj[x.from]=adj[x.from]||[]).push(x.to);});return adj;}
 
-// Find a random beat cycle in the graph
+// Gather distinct beat cycles then pick a random length
 function findCycle(){
-  const adj=beatsAdj(), tri=[];
-  for(const a in adj)for(const b of adj[a]){if(!adj[b])continue;for(const c of adj[b])if(c!==a&&a!==b&&b!==c&&adj[c]&&adj[c].includes(a))tri.push([a,b,c]);}
-  if(tri.length)return tri[Math.floor(Math.random()*tri.length)];
-  const nodes=Object.keys(adj);
-  for(let t=0;t<400;t++){
-    let cur=nodes[Math.floor(Math.random()*nodes.length)]; const start=cur, path=[cur], seen=new Set([cur]);
-    for(let s=0;s<14;s++){
+  const adj=beatsAdj(), nodes=Object.keys(adj); if(!nodes.length)return null;
+  const found=new Map();
+  for(let t=0;t<4000;t++){
+    const start=nodes[(Math.random()*nodes.length)|0], minLen=3+((Math.random()*5)|0);
+    let cur=start; const path=[cur], on=new Set([cur]);
+    for(let s=0;s<13;s++){
       const outs=adj[cur]; if(!outs||!outs.length)break;
-      const nx=outs[Math.floor(Math.random()*outs.length)];
-      if(nx===start&&path.length>=3)return path;
-      if(seen.has(nx))break;
-      seen.add(nx); path.push(nx); cur=nx;
+      if(path.length>=minLen&&outs.includes(start)){const k=[...path].sort().join(">"); if(!found.has(k))found.set(k,path.slice()); break;}
+      const nxs=outs.filter(v=>!on.has(v)); if(!nxs.length)break;
+      cur=nxs[(Math.random()*nxs.length)|0]; on.add(cur); path.push(cur);
     }
   }
-  return null;
+  if(!found.size)return null;
+  const byLen={}; for(const p of found.values())(byLen[p.length]=byLen[p.length]||[]).push(p);
+  const lens=Object.keys(byLen), L=lens[(Math.random()*lens.length)|0], bucket=byLen[L];
+  return bucket[(Math.random()*bucket.length)|0];
 }
 
 // Longest beat chain via randomized walks
